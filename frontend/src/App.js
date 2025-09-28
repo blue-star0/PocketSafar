@@ -36,6 +36,22 @@ const AuthProvider = ({ children }) => {
     window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
   };
 
+  const devLogin = async () => {
+    // Development mode - simulate authentication
+    const mockUser = {
+      id: "dev_user_123",
+      email: "demo@pocketsafar.com",
+      name: "Demo User",
+      picture: "https://via.placeholder.com/40",
+      consent_given: null,
+      rewards_enabled: false,
+      total_points: 0,
+      badges: []
+    };
+    setUser(mockUser);
+    window.location.href = '/dashboard';
+  };
+
   const logout = async () => {
     try {
       await axios.post(`${API}/auth/logout`, {}, { withCredentials: true });
