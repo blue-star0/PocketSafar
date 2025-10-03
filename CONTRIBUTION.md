@@ -277,7 +277,7 @@ class NewActivityClassifier:
 
 ### Reporting Security Issues
 - **DO NOT** create public issues for security vulnerabilities
-- Email security@pocketsafar.org with details
+- Email PocketSafar.org@hotmail.com with details
 - Use encrypted communication when possible
 - Allow reasonable time for fix before disclosure
 
@@ -477,16 +477,17 @@ This will run:
 ## 📞 Contact
 
 ### Maintainers
-- **Lead Developer**: @username (email@example.com)
+- **Lead Developer**: thekrishnacast@gmail.com
 - **ML Lead**: @username (email@example.com)
 - **Frontend Lead**: @username (email@example.com)
 
 ### Project Links
-- **Repository**: https://github.com/yourusername/pocketsafar
+- **Repository**: https://github.com/blue-star0/PocketSafar
 - **Documentation**: https://PocketSafar.org/docs
 - **Discord**: https://discord.gg/PocketSafar
 - **Website**: https://PocketSafar.org
 
 ---
+
 
 Thank you for contributing to PocketSafar! Together, we're building the future of intelligent travel data collection. 🚀
