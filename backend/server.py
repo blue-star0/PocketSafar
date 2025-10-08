@@ -53,9 +53,9 @@ class TravelEntry(BaseModel):
     description: str
     location: str
     date: str
-    transportation_rating: Optional[int] = None
-    infrastructure_rating: Optional[int] = None
-    review: Optional[str] = None
+    transportation_rating: int
+    infrastructure_rating: int
+    review: str
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class Expense(BaseModel):
@@ -63,30 +63,15 @@ class Expense(BaseModel):
     user_id: str
     description: str
     amount: float
-    category: str  # transport, accommodation, food, activities
+    category: str
     date: str
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class ConsentUpdate(BaseModel):
     consent_given: bool
 
-class TravelEntryCreate(BaseModel):
-    title: str
-    description: str
-    location: str
-    date: str
-    transportation_rating: Optional[int] = None
-    infrastructure_rating: Optional[int] = None
-    review: Optional[str] = None
-
-class ExpenseCreate(BaseModel):
-    description: str
-    amount: float
-    category: str
-    date: str
-
-class AIGuideRequest(BaseModel):
-    message: str
+class AIQuery(BaseModel):
+    query: str
     location: Optional[str] = None
 
 class ExpenseCalculation(BaseModel):
@@ -94,247 +79,188 @@ class ExpenseCalculation(BaseModel):
     duration_days: int
     location: str
 
-# Helper Functions
-def prepare_for_mongo(data):
-    if isinstance(data, dict):
-        if isinstance(data.get('created_at'), datetime):
-            data['created_at'] = data['created_at'].isoformat()
-        if isinstance(data.get('expires_at'), datetime):
-            data['expires_at'] = data['expires_at'].isoformat()
-    return data
+# Authentication middleware
+security = HTTPBearer(auto_error=False)
 
-async def get_current_user(session_token: Optional[str] = Cookie(None), authorization: Optional[str] = None):
-    token = session_token
-    if not token and authorization:
+# Helper function to get current user
+async def get_current_user(session_token: Optional[str], authorization: Optional[str]):
+    """Get current user from session token or Authorization header"""
+    token = None
+    
+    if authorization:
+        # Extract token from Authorization header (Bearer token)
         if authorization.startswith("Bearer "):
-            token = authorization[7:]
+            token = authorization.replace("Bearer ", "")
         else:
             token = authorization
+    elif session_token:
+        # Use session token from cookie
+        token = session_token
     
     if not token:
-        raise HTTPException(status_code=401, detail="No session token provided")
+        raise HTTPException(status_code=401, detail="No authentication token provided")
     
-    session = await db.user_sessions.find_one({"session_token": token})
-    if not session:
-        raise HTTPException(status_code=401, detail="Invalid session")
-    
-    if datetime.fromisoformat(session['expires_at']) < datetime.now(timezone.utc):
-        await db.user_sessions.delete_one({"session_token": token})
-        raise HTTPException(status_code=401, detail="Session expired")
-    
-    user = await db.users.find_one({"id": session['user_id']})
-    if not user:
-        raise HTTPException(status_code=401, detail="User not found")
-    
-    return User(**user)
-
-# Authentication Routes
-@api_router.post("/auth/session")
-async def create_session(request: Request, response: Response):
-    session_id = request.headers.get("X-Session-ID")
-    if not session_id:
-        raise HTTPException(status_code=400, detail="Session ID required")
-    
+    # Validate session with Emergent Auth
     async with httpx.AsyncClient() as client:
-        resp = await client.get(
-            "https://demobackend.emergentagent.com/auth/v1/env/oauth/session-data",
-            headers={"X-Session-ID": session_id}
-        )
-        
-        if resp.status_code != 200:
-            raise HTTPException(status_code=401, detail="Invalid session ID")
-        
-        user_data = resp.json()
-    
-    # Check if user exists
-    existing_user = await db.users.find_one({"email": user_data["email"]})
-    if not existing_user:
-        # Create new user
-        user = User(
-            email=user_data["email"],
-            name=user_data["name"],
-            picture=user_data.get("picture")
-        )
-        user_dict = prepare_for_mongo(user.dict())
-        await db.users.insert_one(user_dict)
-    else:
-        user = User(**existing_user)
-    
-    # Create session
-    session_token = user_data["session_token"]
-    expires_at = datetime.now(timezone.utc) + timedelta(days=7)
-    
-    session = UserSession(
-        user_id=user.id,
-        session_token=session_token,
-        expires_at=expires_at
-    )
-    session_dict = prepare_for_mongo(session.dict())
-    await db.user_sessions.insert_one(session_dict)
-    
-    # Set cookie
-    response.set_cookie(
-        key="session_token",
-        value=session_token,
-        max_age=7 * 24 * 60 * 60,
-        httponly=True,
-        secure=True,
-        samesite="none",
-        path="/"
-    )
-    
-    return {
-        "user": user.dict(),
-        "session_token": session_token
-    }
+        try:
+            response = await client.get(
+                "https://emergent-auth.koyeb.app/session",
+                headers={"X-Session-ID": token}
+            )
+            
+            if response.status_code != 200:
+                raise HTTPException(status_code=401, detail="Invalid session")
+            
+            auth_data = response.json()
+            
+            # Get or create user in our database
+            user_data = await db.users.find_one({"email": auth_data["user"]["email"]})
+            
+            if not user_data:
+                # Create new user
+                new_user = User(
+                    email=auth_data["user"]["email"],
+                    name=auth_data["user"]["name"],
+                    picture=auth_data["user"].get("picture")
+                )
+                await db.users.insert_one(new_user.dict())
+                user_data = new_user.dict()
+            
+            return User(**user_data)
+            
+        except httpx.RequestError:
+            raise HTTPException(status_code=401, detail="Authentication service unavailable")
 
-@api_router.post("/auth/logout")
-async def logout(response: Response, session_token: Optional[str] = Cookie(None)):
-    if session_token:
-        await db.user_sessions.delete_one({"session_token": session_token})
-    
-    response.delete_cookie(key="session_token", path="/", samesite="none", secure=True)
-    return {"message": "Logged out successfully"}
-
+# Routes
 @api_router.get("/auth/me")
 async def get_me(authorization: Optional[str] = None, session_token: Optional[str] = Cookie(None)):
     user = await get_current_user(session_token, authorization)
     return user
 
-# Consent Management
+@api_router.post("/auth/logout")
+async def logout(response: Response):
+    response.delete_cookie("session_token")
+    return {"message": "Logged out successfully"}
+
 @api_router.post("/consent")
 async def update_consent(consent_data: ConsentUpdate, authorization: Optional[str] = None, session_token: Optional[str] = Cookie(None)):
     user = await get_current_user(session_token, authorization)
     
+    # Update user consent
     update_data = {
         "consent_given": consent_data.consent_given,
         "rewards_enabled": consent_data.consent_given
     }
     
+    # If user gives consent for the first time, add welcome rewards
+    if consent_data.consent_given and not user.consent_given:
+        update_data["total_points"] = user.total_points + 100  # Welcome bonus
+        update_data["badges"] = user.badges + ["Welcome Explorer"] if "Welcome Explorer" not in user.badges else user.badges
+    
     await db.users.update_one(
-        {"id": user.id},
+        {"id": user.id}, 
         {"$set": update_data}
     )
     
-    # Award welcome badge if consenting for first time
-    if consent_data.consent_given and not user.consent_given:
-        await db.users.update_one(
-            {"id": user.id},
-            {
-                "$inc": {"total_points": 100},
-                "$push": {"badges": "Welcome Explorer"}
-            }
-        )
-    
-    return {"message": "Consent updated successfully"}
+    return {"message": "Consent updated successfully", "rewards_enabled": consent_data.consent_given}
 
-# Travel Diary Routes
-@api_router.post("/travel-entries", response_model=TravelEntry)
-async def create_travel_entry(entry_data: TravelEntryCreate, authorization: Optional[str] = None, session_token: Optional[str] = Cookie(None)):
+@api_router.post("/travel-entries")
+async def create_travel_entry(entry: TravelEntry, authorization: Optional[str] = None, session_token: Optional[str] = Cookie(None)):
     user = await get_current_user(session_token, authorization)
+    entry.user_id = user.id
     
-    entry = TravelEntry(
-        user_id=user.id,
-        **entry_data.dict()
-    )
-    entry_dict = prepare_for_mongo(entry.dict())
-    await db.travel_entries.insert_one(entry_dict)
+    # Insert travel entry
+    await db.travel_entries.insert_one(entry.dict())
     
-    # Award points if user has consent
+    # Add points for travel entry if rewards are enabled
     if user.rewards_enabled:
+        new_points = user.total_points + 50  # Points per entry
+        badges = user.badges.copy()
+        
+        # Check for new badges
+        user_entries_count = await db.travel_entries.count_documents({"user_id": user.id})
+        if user_entries_count == 1 and "First Journey" not in badges:
+            badges.append("First Journey")
+        elif user_entries_count >= 5 and "Travel Enthusiast" not in badges:
+            badges.append("Travel Enthusiast")
+        
         await db.users.update_one(
             {"id": user.id},
-            {"$inc": {"total_points": 50}}
+            {"$set": {"total_points": new_points, "badges": badges}}
         )
-        
-        # Check for badges
-        user_entries = await db.travel_entries.count_documents({"user_id": user.id})
-        if user_entries == 1:
-            await db.users.update_one(
-                {"id": user.id},
-                {"$push": {"badges": "First Journey"}}
-            )
-        elif user_entries == 10:
-            await db.users.update_one(
-                {"id": user.id},
-                {"$push": {"badges": "Travel Enthusiast"}}
-            )
     
-    return entry
+    return {"message": "Travel entry created successfully", "id": entry.id}
 
-@api_router.get("/travel-entries", response_model=List[TravelEntry])
+@api_router.get("/travel-entries")
 async def get_travel_entries(authorization: Optional[str] = None, session_token: Optional[str] = Cookie(None)):
     user = await get_current_user(session_token, authorization)
-    entries = await db.travel_entries.find({"user_id": user.id}).to_list(1000)
-    return [TravelEntry(**entry) for entry in entries]
+    entries = await db.travel_entries.find({"user_id": user.id}).to_list(length=None)
+    return entries
 
-# Expense Tracking Routes
-@api_router.post("/expenses", response_model=Expense)
-async def create_expense(expense_data: ExpenseCreate, authorization: Optional[str] = None, session_token: Optional[str] = Cookie(None)):
+@api_router.post("/expenses")
+async def create_expense(expense: Expense, authorization: Optional[str] = None, session_token: Optional[str] = Cookie(None)):
     user = await get_current_user(session_token, authorization)
+    expense.user_id = user.id
     
-    expense = Expense(
-        user_id=user.id,
-        **expense_data.dict()
-    )
-    expense_dict = prepare_for_mongo(expense.dict())
-    await db.expenses.insert_one(expense_dict)
-    
-    return expense
+    await db.expenses.insert_one(expense.dict())
+    return {"message": "Expense created successfully", "id": expense.id}
 
-@api_router.get("/expenses", response_model=List[Expense])
+@api_router.get("/expenses")
 async def get_expenses(authorization: Optional[str] = None, session_token: Optional[str] = Cookie(None)):
     user = await get_current_user(session_token, authorization)
-    expenses = await db.expenses.find({"user_id": user.id}).to_list(1000)
-    return [Expense(**expense) for expense in expenses]
+    expenses = await db.expenses.find({"user_id": user.id}).to_list(length=None)
+    return expenses
 
 @api_router.get("/expenses/summary")
 async def get_expense_summary(authorization: Optional[str] = None, session_token: Optional[str] = Cookie(None)):
     user = await get_current_user(session_token, authorization)
     
+    # Aggregate expenses by category
     pipeline = [
         {"$match": {"user_id": user.id}},
-        {"$group": {
-            "_id": "$category",
-            "total": {"$sum": "$amount"},
-            "count": {"$sum": 1}
-        }}
+        {
+            "$group": {
+                "_id": "$category",
+                "total": {"$sum": "$amount"},
+                "count": {"$sum": 1}
+            }
+        }
     ]
     
-    result = await db.expenses.aggregate(pipeline).to_list(None)
+    category_summary = await db.expenses.aggregate(pipeline).to_list(length=None)
     
-    total_spent = sum(item["total"] for item in result)
+    # Calculate total spent
+    total_spent = sum(item["total"] for item in category_summary)
     
     return {
-        "categories": result,
+        "categories": category_summary,
         "total_spent": total_spent
     }
 
-# AI Travel Guide
 @api_router.post("/ai-guide")
-async def get_ai_guide_response(request: AIGuideRequest, authorization: Optional[str] = None, session_token: Optional[str] = Cookie(None)):
+async def ask_ai_guide(query: AIQuery, authorization: Optional[str] = None, session_token: Optional[str] = Cookie(None)):
     user = await get_current_user(session_token, authorization)
     
     try:
-        # Initialize LLM Chat
+        # Initialize AI chat with Emergent LLM
         chat = LlmChat(
             api_key=os.environ.get('EMERGENT_LLM_KEY'),
-            session_id=f"travel_guide_{user.id}",
-            system_message="You are an expert AI travel guide for India, specializing in Kerala tourism and Indian travel experiences. Provide helpful, accurate, and engaging travel advice including recommendations for places to visit, local cuisine, cultural events, transportation options, and budget planning. Focus on authentic experiences and practical travel tips."
+            session_id=f"ai_guide_{user.id}",
+            system_message="You are an expert travel guide for India with deep knowledge of culture, attractions, transportation, food, safety, and local customs. Provide helpful, accurate, and culturally sensitive travel advice. Focus on practical tips, hidden gems, and authentic experiences. Always consider budget options and safety recommendations."
         ).with_model("openai", "gpt-5")
         
-        # Create user message with location context if provided
-        message_text = request.message
-        if request.location:
-            message_text = f"For location: {request.location}\n\nUser question: {request.message}"
+        # Add location context if provided
+        context_query = query.query
+        if query.location:
+            context_query = f"For travel to {query.location} in India: {query.query}"
         
-        user_message = UserMessage(text=message_text)
+        user_message = UserMessage(text=context_query)
         response = await chat.send_message(user_message)
         
-        return {"response": response}
+        return {"response": response, "location": query.location}
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"AI Guide error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"AI service error: {str(e)}")
 
 # Expense Calculator
 @api_router.post("/calculate-trip-cost")
@@ -374,7 +300,7 @@ app.include_router(api_router)
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+    allow_origins=os.environ.get('CORS_ORIGINS', 'http://localhost:3000').split(','),
     allow_methods=["*"],
     allow_headers=["*"],
 )
