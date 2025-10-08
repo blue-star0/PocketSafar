@@ -1,5 +1,4 @@
 # PocketSafar 🌍
-
 *A Smart Travel Diary with ML-Enhanced Data Collection and Real-Time Analytics*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -37,78 +36,77 @@ PocketSafar uses a modern, scalable full-stack architecture:
 
 ```
 ┌───────────────────────┐
-│    React 19 Frontend      │
-│   + Tailwind + Radix UI   │
-│  (UI/UX, Visualization)  │
+│ React 19 Frontend     │
+│ + Tailwind + Radix UI │
+│ (UI/UX, Visualization)│
 └───────────┬───────────┘
             │ REST API
             │
 ┌───────────┴───────────┐
-│    FastAPI Backend        │
-│   + ML Pipeline + APIs   │
-│  (Data Processing, ML)   │
+│  FastAPI Backend      │
+│ + ML Pipeline + APIs  │
+│ (Data Processing, ML) │
 └───────┬────────┬───────┘
-        │            │
-        │            │
-┌───────┴───────┐  ┌────┴─────┐
-│   MongoDB     │  │  AWS S3   │
-│   Database    │  │  Storage  │
-└───────────────┘  └──────────┘
+        │        │
+        │        │
+┌───────┴───────┐ ┌────┴─────┐
+│   MongoDB     │ │  AWS S3  │
+│   Database    │ │  Storage │
+└───────────────┘ └──────────┘
 ```
 
 ## 🛠️ Tech Stack
 
 ### Backend
-- **FastAPI** - Modern, high-performance Python web framework
-- **scikit-learn** - Machine learning library (Isolation Forest for outlier detection)
-- **pandas** - Data manipulation and analysis
-- **TextBlob** - Natural language processing for sentiment analysis
-- **boto3** - AWS SDK for Python (S3 integration)
-- **MongoDB** - NoSQL database for flexible data storage
-- **Python 3.8+** - Programming language
+- • **FastAPI** - Modern, high-performance Python web framework
+- • **scikit-learn** - Machine learning library (Isolation Forest for outlier detection)
+- • **pandas** - Data manipulation and analysis
+- • **TextBlob** - Natural language processing for sentiment analysis
+- • **boto3** - AWS SDK for Python (S3 integration)
+- • **MongoDB** - NoSQL database for flexible data storage
+- • **Python 3.8+** - Programming language
 
 ### Frontend
-- **React 19** - Latest React with modern features
-- **Tailwind CSS** - Utility-first CSS framework
-- **Radix UI** - Unstyled, accessible component primitives
-- **TypeScript** - Type-safe JavaScript
-- **Vite** - Next-generation frontend build tool
+- • **React 19** - Latest React with modern features
+- • **Tailwind CSS** - Utility-first CSS framework
+- • **Radix UI** - Unstyled, accessible component primitives
+- • **TypeScript** - Type-safe JavaScript
+- • **Vite** - Next-generation frontend build tool
 
 ### Cloud & Infrastructure
-- **AWS S3** - Object storage for media files
-- **MongoDB Atlas** - Cloud-hosted database (optional)
+- • **AWS S3** - Object storage for media files
+- • **MongoDB Atlas** - Cloud-hosted database (optional)
 
 ## 🧪 ML Pipeline
 
 PocketSafar includes a sophisticated machine learning pipeline for data quality and insights:
 
 ### 1. GPS Outlier Removal
-- **Algorithm**: Isolation Forest (unsupervised anomaly detection)
-- **Purpose**: Identifies and removes erroneous GPS coordinates caused by signal issues
-- **Features**: Contamination parameter tuning, real-time processing
-- **Impact**: Improves route accuracy by 15-25%
+- • **Algorithm**: Isolation Forest (unsupervised anomaly detection)
+- • **Purpose**: Identifies and removes erroneous GPS coordinates caused by signal issues
+- • **Features**: Contamination parameter tuning, real-time processing
+- • **Impact**: Improves route accuracy by 15-25%
 
 ### 2. Activity Recognition
-- **Purpose**: Classifies travel modes (walking, cycling, driving, public transit)
-- **Input**: GPS speed, acceleration patterns, location context
-- **Output**: Predicted activity type with confidence score
+- • **Purpose**: Classifies travel modes (walking, cycling, driving, public transit)
+- • **Input**: GPS speed, acceleration patterns, location context
+- • **Output**: Predicted activity type with confidence score
 
 ### 3. Review Sentiment Analysis
-- **Algorithm**: TextBlob sentiment analyzer
-- **Purpose**: Analyzes user reviews and feedback sentiment
-- **Output**: Polarity score (-1 to +1) and subjectivity rating
-- **Use Case**: Identifies popular destinations and user satisfaction
+- • **Algorithm**: TextBlob sentiment analyzer
+- • **Purpose**: Analyzes user reviews and feedback sentiment
+- • **Output**: Polarity score (-1 to +1) and subjectivity rating
+- • **Use Case**: Identifies popular destinations and user satisfaction
 
 ## ⚡ Quick Start
 
 ### Prerequisites
-- Python 3.8 or higher
-- Node.js 16+ and npm/yarn
-- MongoDB instance (local or Atlas)
-- AWS account (for S3, optional)
+- • Python 3.8 or higher
+- • Node.js 16+ and npm/yarn
+- • MongoDB instance (local or Atlas)
+- • AWS account (for S3, optional)
 
 ### Backend Setup
-
 ```bash
 # Clone the repository
 git clone https://github.com/PocketSafar/PocketSafar.git
@@ -128,29 +126,24 @@ cp .env.example .env
 # Run the backend server
 python server.py
 # Server will start at http://localhost:8000
+
 # API docs available at http://localhost:8000/docs
 ```
 
 ### Frontend Setup
-
 ```bash
 # Navigate to frontend directory
 cd ../frontend
 
 # Install dependencies
-npm install
-# or
-yarn install
+npm install  # or yarn install
 
 # Set up environment variables
 cp .env.example .env
 # Configure API endpoint (default: http://localhost:8000)
 
 # Run development server
-npm run dev
-# or
-yarn dev
-
+npm run dev  # or yarn dev
 # Application will open at http://localhost:5173
 ```
 
@@ -159,15 +152,15 @@ yarn dev
 #### Backend Tests
 ```bash
 cd backend
-pytest                          # Run all tests
-pytest --cov=.                  # With coverage report
-pytest tests/test_ml_pipeline.py # Specific test file
+pytest  # Run all tests
+pytest --cov=.  # With coverage report
+pytest tests/test_ml_pipeline.py  # Specific test file
 ```
 
 #### Frontend Tests
 ```bash
 cd frontend
-npm test         # Run all tests
+npm test  # Run all tests
 npm run test:coverage  # With coverage
 ```
 
@@ -175,10 +168,10 @@ npm run test:coverage  # With coverage
 
 For detailed documentation, please refer to:
 
-- **[Setup Guide](PocketSafar_Setup_Guide.md)** - Complete setup instructions
-- **[API Documentation](http://localhost:8000/docs)** - Interactive API docs (run backend first)
-- **[Contributing Guide](CONTRIBUTION.md)** - How to contribute to the project
-- **[Code of Conduct](CODE_OF_CONDUCT.md)** - Community guidelines
+- • **[Setup Guide](PocketSafar_Setup_Guide.md)** - Complete setup instructions
+- • **[API Documentation](http://localhost:8000/docs)** - Interactive API docs (run backend first)
+- • **[Contributing Guide](CONTRIBUTION.md)** - How to contribute to the project
+- • **[Code of Conduct](CODE_OF_CONDUCT.md)** - Community guidelines
 
 ## 🛣️ Roadmap
 
@@ -195,16 +188,15 @@ For detailed documentation, please refer to:
 
 We welcome contributions from developers of all skill levels! Whether you're interested in:
 
-- 🔧 **Backend Development**: FastAPI, ML pipelines, data processing, API design
-- 🎨 **Frontend Development**: React components, UI/UX design, data visualization
-- 📝 **Documentation**: Tutorials, guides, API documentation
-- 🧪 **Testing**: Unit tests, integration tests, E2E tests
-- 🐛 **Bug Reports**: Help us identify and fix issues
+- • 🔧 **Backend Development**: FastAPI, ML pipelines, data processing, API design
+- • 🎨 **Frontend Development**: React components, UI/UX design, data visualization
+- • 📝 **Documentation**: Tutorials, guides, API documentation
+- • 🧪 **Testing**: Unit tests, integration tests, E2E tests
+- • 🐛 **Bug Reports**: Help us identify and fix issues
 
 Please read our [Contributing Guide](CONTRIBUTION.md) to get started.
 
 ### Development Workflow
-
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Make your changes (backend or frontend)
@@ -224,25 +216,18 @@ We are committed to providing a welcoming and inclusive environment. Please read
 
 ## 📧 Contact & Support
 
-- **Issues**: [GitHub Issues](https://github.com/PocketSafar/PocketSafar/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/PocketSafar/PocketSafar/discussions)
-- **Email**: [Contact maintainers through GitHub]
+- • **Issues**: [GitHub Issues](https://github.com/PocketSafar/PocketSafar/issues)
+- • **Discussions**: [GitHub Discussions](https://github.com/PocketSafar/PocketSafar/discussions)
+- • **Email**: [Contact maintainers through GitHub]
 
 ## 🎉 Acknowledgments
 
-- FastAPI framework for excellent developer experience
-- React team for React 19 innovations
-- scikit-learn community for ML algorithms
-- Tailwind Labs for Tailwind CSS
-- Radix UI for accessible components
-- All our amazing contributors!
-
-## 📊 Project Stats
-
-![GitHub stars](https://img.shields.io/github/stars/PocketSafar/PocketSafar?style=social)
-![GitHub forks](https://img.shields.io/github/forks/PocketSafar/PocketSafar?style=social)
-![GitHub issues](https://img.shields.io/github/issues/PocketSafar/PocketSafar)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/PocketSafar/PocketSafar)
+- • FastAPI framework for excellent developer experience
+- • React team for React 19 innovations
+- • scikit-learn community for ML algorithms
+- • Tailwind Labs for Tailwind CSS
+- • Radix UI for accessible components
+- • All our amazing contributors!
 
 ---
 
