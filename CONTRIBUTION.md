@@ -1,6 +1,6 @@
 # Contributing to PocketSafar
 
-Thank you for your interest in contributing to PocketSafar! This document provides guidelines and information for contributors.
+Thank you for your interest in contributing to PocketSafar! This document provides comprehensive guidelines for contributing to both our backend (FastAPI, ML, data processing) and frontend (React, UI/UX) systems.
 
 ## 🌟 How to Contribute
 
@@ -8,486 +8,448 @@ Thank you for your interest in contributing to PocketSafar! This document provid
 
 We welcome several types of contributions:
 
-- **🐛 Bug Reports**: Help us identify and fix issues
-- **💡 Feature Requests**: Suggest new functionality
-- **📝 Documentation**: Improve guides, APIs docs, and examples
-- **🧪 Testing**: Add test coverage or improve existing tests
-- **🔧 Code**: Implement features, fix bugs, optimize performance
+- **🐛 Bug Reports**: Help us identify and fix issues in backend APIs or frontend UI
+- **💡 Feature Requests**: Suggest new functionality for ML pipelines, API endpoints, or user features
+- **📝 Documentation**: Improve guides, API docs, component documentation, and examples
+- **🧪 Testing**: Add test coverage for backend endpoints, ML models, or frontend components
+- **🔧 Code**: Implement features, fix bugs, optimize performance in either stack
 - **🎨 Design**: UI/UX improvements and accessibility enhancements
 - **🌍 Translation**: Multi-language support
 - **📊 Research**: ML model improvements and data analysis
 
-### Getting Started
+## 🚀 Getting Started
 
-1. **Fork the Repository**
-   ```bash
-   git clone https://github.com/yourusername/pocketsafar.git
-   cd pocketsafar
-   ```
+### 1. Fork the Repository
 
-2. **Set Up Development Environment**
-   ```bash
-   # Backend setup
-   cd backend
-   pip install -r requirements.txt
-   pip install -r requirements-dev.txt
-   
-   # Frontend setup
-   cd ../frontend
-   yarn install
-   ```
+```bash
+git clone https://github.com/YOUR_USERNAME/PocketSafar.git
+cd PocketSafar
+```
 
-3. **Create a Feature Branch**
-   ```bash
-   git checkout -b feature/your-feature-name
-   # or
-   git checkout -b fix/issue-number
-   ```
+### 2. Set Up Development Environment
+
+#### Backend Setup (FastAPI + ML)
+
+```bash
+cd backend
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Install development dependencies
+pip install pytest pytest-cov black flake8 mypy
+
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your AWS credentials and MongoDB connection string
+```
+
+**Backend Tech Stack:**
+- FastAPI (Web framework)
+- scikit-learn (Machine learning - Isolation Forest for GPS outlier detection)
+- pandas (Data processing)
+- TextBlob (Sentiment analysis for reviews)
+- boto3 (AWS S3 integration)
+- MongoDB (Database)
+- Python 3.8+
+
+#### Frontend Setup (React 19)
+
+```bash
+cd frontend
+
+# Install dependencies
+npm install
+# or
+yarn install
+
+# Set up environment variables
+cp .env.example .env
+# Configure API endpoints
+```
+
+**Frontend Tech Stack:**
+- React 19
+- Tailwind CSS (Styling)
+- Radix UI (Accessible component primitives)
+- TypeScript (Type safety)
+- Vite (Build tool)
+
+### 3. Create a Feature Branch
+
+```bash
+# For new features
+git checkout -b feature/backend-your-feature-name
+git checkout -b feature/frontend-your-feature-name
+
+# For bug fixes
+git checkout -b fix/backend-issue-description
+git checkout -b fix/frontend-issue-description
+
+# For ML improvements
+git checkout -b ml/model-improvement-description
+```
 
 ## 📋 Development Guidelines
 
-### Code Standards
+### Backend Development (FastAPI + ML)
 
-#### Python (Backend)
+#### Code Standards
+
 - **Style**: Follow PEP 8 with Black formatting
 - **Type Hints**: Use type annotations for all functions
 - **Documentation**: Docstrings for all public functions and classes
 - **Testing**: Minimum 80% test coverage for new code
 
-```python
-# Good example
-async def create_travel_entry(
-    user_id: str, 
-    travel_data: Dict[str, Any]
-) -> TravelEntryResponse:
-    """
-    Create a new travel entry with ML validation.
-    
-    Args:
-        user_id: Unique identifier for the user
-        travel_data: Dictionary containing travel information
-        
-    Returns:
-        TravelEntryResponse with entry details and quality metrics
-        
-    Raises:
-        ValidationError: If travel data is invalid
-        StorageError: If database operation fails
-    """
-```
+#### API Design Principles
 
-#### JavaScript/React (Frontend)
-- **Style**: Use Prettier with ESLint configuration
-- **Components**: Functional components with hooks
-- **TypeScript**: Gradually migrating to TypeScript
-- **Testing**: React Testing Library for component tests
+- Use RESTful conventions
+- Provide clear error messages with appropriate HTTP status codes
+- Include request/response models using Pydantic
+- Document all endpoints with OpenAPI/Swagger descriptions
+- Implement proper authentication and authorization
 
-```javascript
-// Good example
-const TravelEntryForm = ({ onSubmit, loading }) => {
-  const [formData, setFormData] = useState({});
-  
-  const handleSubmit = useCallback(async (data) => {
-    try {
-      await onSubmit(data);
-    } catch (error) {
-      console.error('Failed to submit travel entry:', error);
-    }
-  }, [onSubmit]);
-  
-  // Component implementation...
-};
-```
+#### ML Pipeline Guidelines
 
-### Git Workflow
+Our ML pipeline includes:
 
-#### Commit Messages
-Follow the [Conventional Commits](https://www.conventionalcommits.org/) specification:
+1. **GPS Outlier Removal**: Isolation Forest algorithm to detect and remove anomalous GPS coordinates
+2. **Activity Recognition**: Classification of user activities from sensor data
+3. **Review Sentiment Analysis**: TextBlob-based sentiment scoring for user reviews
 
-```
-type(scope): description
+When contributing to ML components:
 
-[optional body]
+- Document model parameters and hyperparameters
+- Include performance metrics (accuracy, precision, recall, F1-score)
+- Provide data preprocessing steps
+- Test with edge cases and outliers
+- Consider computational efficiency for production deployment
 
-[optional footer]
-```
-
-**Types:**
-- `feat`: New feature
-- `fix`: Bug fix
-- `docs`: Documentation changes
-- `style`: Code style changes (formatting, etc.)
-- `refactor`: Code refactoring
-- `test`: Adding or modifying tests
-- `chore`: Maintenance tasks
-
-**Examples:**
-```
-feat(ml): add GPS outlier detection algorithm
-
-Implement Isolation Forest-based outlier detection for GPS coordinates
-to improve data quality in travel entries.
-
-Closes #123
-```
-
-```
-fix(api): handle missing user_id in travel entry creation
-
-- Add validation for required user_id parameter
-- Return 400 Bad Request with descriptive error message
-- Add test coverage for error scenario
-
-Fixes #456
-```
-
-#### Branch Naming
-- `feature/feature-name`: New features
-- `fix/issue-number` or `fix/bug-description`: Bug fixes
-- `docs/update-description`: Documentation updates
-- `test/test-description`: Test additions/improvements
-
-### Code Review Process
-
-1. **Self-Review**: Review your own changes before submitting
-2. **Automated Checks**: Ensure all CI checks pass
-3. **Peer Review**: At least one maintainer review required
-4. **Testing**: All tests must pass, coverage maintained
-5. **Documentation**: Update relevant documentation
-
-## 🧪 Testing Guidelines
-
-### Backend Testing
+#### Backend Testing
 
 ```bash
+cd backend
+
 # Run all tests
 pytest
 
 # Run with coverage
-pytest --cov=./ --cov-report=html
+pytest --cov=. --cov-report=html
 
 # Run specific test file
-pytest tests/test_travel_service.py -v
+pytest tests/test_ml_pipeline.py
 
-# Run tests with markers
-pytest -m "unit" # Unit tests only
-pytest -m "integration" # Integration tests only
+# Run with verbose output
+pytest -v
 ```
 
-#### Test Structure
-```python
-# tests/test_travel_service.py
-import pytest
-from unittest.mock import AsyncMock, MagicMock
-from services.travel_service import TravelDataService
-
-class TestTravelDataService:
-    @pytest.fixture
-    async def service(self):
-        mock_storage = AsyncMock()
-        return TravelDataService(mock_storage)
-    
-    @pytest.mark.asyncio
-    async def test_create_travel_entry_success(self, service):
-        # Test implementation
-        pass
-    
-    @pytest.mark.asyncio
-    async def test_create_travel_entry_invalid_data(self, service):
-        # Test error handling
-        pass
-```
-
-### Frontend Testing
+#### Backend Code Formatting
 
 ```bash
-# Run all tests
+# Format code with Black
+black .
+
+# Check linting
+flake8 .
+
+# Type checking
+mypy .
+```
+
+### Frontend Development (React 19)
+
+#### Code Standards
+
+- **Style**: Follow Airbnb React style guide
+- **TypeScript**: Use TypeScript for all components
+- **Components**: Create reusable, accessible components
+- **State Management**: Use React hooks and context appropriately
+- **Performance**: Optimize re-renders and bundle size
+
+#### UI/UX Guidelines
+
+- Follow responsive design principles (mobile-first)
+- Ensure WCAG 2.1 AA accessibility compliance
+- Use Tailwind CSS utility classes consistently
+- Leverage Radix UI for accessible primitives
+- Test on multiple devices and browsers
+- Maintain consistent spacing, typography, and color schemes
+
+#### Component Structure
+
+```typescript
+// Use functional components with TypeScript
+import React from 'react';
+
+interface ComponentProps {
+  title: string;
+  onAction: () => void;
+}
+
+export const Component: React.FC<ComponentProps> = ({ title, onAction }) => {
+  return (
+    <div className="container">
+      {/* Component content */}
+    </div>
+  );
+};
+```
+
+#### Frontend Testing
+
+```bash
+cd frontend
+
+# Run tests
+npm test
+# or
 yarn test
 
 # Run with coverage
-yarn test --coverage --watchAll=false
+npm run test:coverage
 
-# Run specific test
-yarn test TravelEntryForm.test.js
+# Run E2E tests
+npm run test:e2e
 ```
 
-#### Test Structure
-```javascript
-// src/components/__tests__/TravelEntryForm.test.js
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { TravelEntryForm } from '../TravelEntryForm';
-
-describe('TravelEntryForm', () => {
-  test('submits form with valid data', async () => {
-    const mockOnSubmit = jest.fn();
-    render(<TravelEntryForm onSubmit={mockOnSubmit} />);
-    
-    // Test implementation
-  });
-  
-  test('displays validation errors', () => {
-    // Test error handling
-  });
-});
-```
-
-## 📊 Machine Learning Guidelines
-
-### Data Processing
-- **Data Privacy**: Never log or store sensitive user information
-- **Quality Metrics**: All ML models must report confidence/quality scores
-- **Performance**: Models should process data in < 5 seconds
-- **Validation**: Cross-validation required for model changes
-
-### Model Development
-```python
-# Example ML model contribution
-class NewActivityClassifier:
-    def __init__(self):
-        self.model = None
-        self.scaler = StandardScaler()
-        
-    def train(self, training_data: pd.DataFrame) -> Dict[str, float]:
-        """
-        Train the activity classification model.
-        
-        Returns:
-            Dictionary with training metrics (accuracy, precision, recall)
-        """
-        # Implementation with proper validation
-        
-    def predict(self, features: np.ndarray) -> Tuple[str, float]:
-        """
-        Predict activity type with confidence score.
-        
-        Returns:
-            Tuple of (activity_type, confidence_score)
-        """
-        # Implementation
-```
-
-## 🔒 Security Guidelines
-
-### Security Best Practices
-- **Input Validation**: Validate all user inputs
-- **SQL Injection**: Use parameterized queries/ORM
-- **Authentication**: Never commit API keys or secrets
-- **Data Sanitization**: Sanitize data before processing
-- **Error Handling**: Don't expose internal details in error messages
-
-### Reporting Security Issues
-- **DO NOT** create public issues for security vulnerabilities
-- Email PocketSafar.org@hotmail.com with details
-- Use encrypted communication when possible
-- Allow reasonable time for fix before disclosure
-
-## 📚 Documentation Guidelines
-
-### Code Documentation
-- **Docstrings**: All public functions and classes
-- **Comments**: Explain complex logic, not obvious code
-- **Type Hints**: Use for all function parameters and returns
-- **Examples**: Include usage examples in docstrings
-
-### API Documentation
-- **OpenAPI**: Keep FastAPI schema documentation updated
-- **Examples**: Provide request/response examples
-- **Error Codes**: Document all possible error responses
-- **Rate Limits**: Document any API limitations
-
-### User Documentation
-- **Clear Instructions**: Step-by-step setup guides
-- **Screenshots**: Visual guides for UI features
-- **Troubleshooting**: Common issues and solutions
-- **FAQ**: Frequently asked questions
-
-## 🚀 Performance Guidelines
-
-### Backend Performance
-- **Database Queries**: Optimize queries, use appropriate indexes
-- **Async Operations**: Use async/await for I/O operations
-- **Caching**: Implement caching for frequently accessed data
-- **Resource Management**: Properly close connections and clean up
-
-### Frontend Performance
-- **Bundle Size**: Monitor and optimize bundle size
-- **Lazy Loading**: Use React.lazy for code splitting
-- **State Management**: Avoid unnecessary re-renders
-- **Image Optimization**: Compress and lazy load images
-
-### ML Performance
-- **Model Size**: Keep models under 100MB
-- **Inference Time**: Target < 1 second for real-time processing
-- **Memory Usage**: Monitor and optimize memory consumption
-- **Batch Processing**: Use batching for bulk operations
-
-## 🎯 Issue Guidelines
-
-### Bug Reports
-Use the bug report template and include:
-- **Environment**: OS, Python/Node versions, browser
-- **Steps to Reproduce**: Clear, numbered steps
-- **Expected Behavior**: What should happen
-- **Actual Behavior**: What actually happens
-- **Screenshots**: If applicable
-- **Logs**: Relevant error messages or logs
-
-### Feature Requests
-Use the feature request template and include:
-- **Problem**: What problem does this solve?
-- **Solution**: Proposed solution or approach
-- **Alternatives**: Other approaches considered
-- **Impact**: Who would benefit and how?
-- **Implementation**: Technical considerations
-
-### Enhancement Proposals
-For significant changes, create an RFC (Request for Comments):
-1. Create an issue with `[RFC]` prefix
-2. Describe the problem and proposed solution
-3. Include technical design and implementation plan
-4. Gather community feedback before implementation
-
-## 👥 Community Guidelines
-
-### Code of Conduct
-We are committed to providing a welcoming and inclusive environment. Please read our [Code of Conduct](CODE_OF_CONDUCT.md).
-
-### Communication Channels
-- **GitHub Issues**: Technical discussions and bug reports
-- **GitHub Discussions**: General questions and community chat
-- **Discord**: Real-time collaboration (link in README)
-- **Email**: Maintainer contact and security issues
-
-### Getting Help
-- **Documentation**: Check existing docs first
-- **Search Issues**: Look for existing discussions
-- **Ask Questions**: Use GitHub Discussions for help
-- **Be Patient**: Maintainers are volunteers
-
-## 🏅 Recognition
-
-### Contributor Levels
-- **Contributor**: Made accepted contributions
-- **Regular Contributor**: 5+ merged PRs
-- **Core Contributor**: 20+ PRs, helps with reviews
-- **Maintainer**: Commit access, release management
-
-### Hall of Fame
-Contributors who make significant impacts are recognized in:
-- README acknowledgments
-- Annual contributor highlights
-- Conference presentations (with permission)
-
-## 📈 Release Process
-
-### Versioning
-We use [Semantic Versioning](https://semver.org/):
-- **MAJOR**: Breaking changes
-- **MINOR**: New features (backward compatible)
-- **PATCH**: Bug fixes
-
-### Release Cycle
-- **Major Releases**: Quarterly (with beta period)
-- **Minor Releases**: Monthly
-- **Patch Releases**: As needed for critical bugs
-
-### Changelog
-All changes are documented in [CHANGELOG.md](CHANGELOG.md) following [Keep a Changelog](https://keepachangelog.com/) format.
-
-## 💻 Development Setup
-
-### Prerequisites
-- Python 3.8+
-- Node.js 16+
-- MongoDB 4.4+
-- Git
-- Docker (optional)
-
-### IDE Configuration
-
-#### VS Code Settings
-```json
-{
-  "python.defaultInterpreterPath": "./venv/bin/python",
-  "python.linting.enabled": true,
-  "python.linting.flake8Enabled": true,
-  "python.formatting.provider": "black",
-  "editor.formatOnSave": true,
-  "eslint.autoFixOnSave": true
-}
-```
-
-#### Recommended Extensions
-- Python
-- Pylance
-- ES7+ React/Redux/React-Native snippets
-- Prettier - Code formatter
-- ESLint
-- GitLens
-- MongoDB for VS Code
-
-### Local Development
+#### Frontend Build & Linting
 
 ```bash
-# Start MongoDB
-mongod --dbpath ./data/db
+# Lint code
+npm run lint
 
-# Backend development
-cd backend
-source venv/bin/activate
-uvicorn server:app --reload --host 0.0.0.0 --port 8001
+# Fix linting issues
+npm run lint:fix
 
-# Frontend development
-cd frontend
-yarn start
+# Type check
+npm run type-check
 
-# Run tests continuously
-# Terminal 1:
-cd backend && pytest --watch
-
-# Terminal 2:
-cd frontend && yarn test --watch
+# Build for production
+npm run build
 ```
 
-## 🔄 Continuous Integration
+## 🔄 Pull Request Process
 
-### GitHub Actions
-Our CI pipeline includes:
-- **Linting**: Code style and quality checks
-- **Testing**: Unit and integration tests
-- **Security**: Dependency vulnerability scanning
-- **Build**: Docker image creation
-- **Deploy**: Automatic deployment to staging
+### Before Submitting
 
-### Pre-commit Hooks
-Install pre-commit hooks to catch issues early:
+1. **Update your branch** with the latest main branch
+   ```bash
+   git fetch origin
+   git rebase origin/main
+   ```
 
+2. **Run all tests** and ensure they pass
+   - Backend: `pytest`
+   - Frontend: `npm test`
+
+3. **Run linters and formatters**
+   - Backend: `black .` and `flake8 .`
+   - Frontend: `npm run lint:fix`
+
+4. **Update documentation** if you've changed APIs or added features
+
+5. **Test manually** to ensure your changes work as expected
+
+### Submitting Your Pull Request
+
+1. **Push your branch** to your fork
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+
+2. **Create a Pull Request** on GitHub with:
+   - Clear title describing the change
+   - Description of what changes were made and why
+   - Reference to any related issues (e.g., "Fixes #123")
+   - Screenshots/GIFs for UI changes
+   - Test results and coverage reports
+   - Performance impact (if applicable)
+
+3. **PR Template** (use this format):
+   ```markdown
+   ## Description
+   Brief description of changes
+
+   ## Type of Change
+   - [ ] Bug fix (backend)
+   - [ ] Bug fix (frontend)
+   - [ ] New feature (backend API/ML)
+   - [ ] New feature (frontend UI)
+   - [ ] Documentation update
+   - [ ] Performance improvement
+   - [ ] Code refactoring
+
+   ## Testing
+   - [ ] All tests pass
+   - [ ] Added new tests for new functionality
+   - [ ] Manual testing completed
+
+   ## Screenshots (for UI changes)
+   (Add screenshots here)
+
+   ## Checklist
+   - [ ] Code follows project style guidelines
+   - [ ] Documentation updated
+   - [ ] No console warnings or errors
+   - [ ] Responsive design tested (frontend)
+   - [ ] API endpoints documented (backend)
+   ```
+
+### Code Review Process
+
+- Maintainers will review your PR within 2-3 business days
+- Address review comments promptly
+- Be open to feedback and suggestions
+- Update your PR based on review feedback
+- Once approved, a maintainer will merge your PR
+
+## 🧪 Testing Requirements
+
+### Backend Testing
+
+- **Unit Tests**: Test individual functions and classes
+- **Integration Tests**: Test API endpoints end-to-end
+- **ML Pipeline Tests**: Test data preprocessing and model predictions
+- **Coverage**: Maintain >80% code coverage
+
+### Frontend Testing
+
+- **Component Tests**: Test individual React components
+- **Integration Tests**: Test component interactions
+- **E2E Tests**: Test complete user flows
+- **Accessibility Tests**: Ensure WCAG compliance
+
+## 📝 Commit Message Guidelines
+
+Use conventional commits format:
+
+```
+<type>(<scope>): <subject>
+
+<body>
+
+<footer>
+```
+
+**Types:**
+- `feat`: New feature (backend or frontend)
+- `fix`: Bug fix
+- `docs`: Documentation changes
+- `style`: Code style changes (formatting, missing semicolons, etc.)
+- `refactor`: Code refactoring
+- `test`: Adding or updating tests
+- `chore`: Maintenance tasks
+- `perf`: Performance improvements
+- `ml`: Machine learning model updates
+
+**Scopes:**
+- `backend`: Backend/API changes
+- `frontend`: Frontend/UI changes
+- `ml`: Machine learning pipeline
+- `docs`: Documentation
+- `tests`: Test files
+- `ci`: CI/CD changes
+
+**Examples:**
 ```bash
-pip install pre-commit
-pre-commit install
+feat(backend): add GPS outlier detection endpoint
+fix(frontend): resolve map rendering issue on mobile
+ml(pipeline): improve sentiment analysis accuracy
+docs(readme): update setup instructions
 ```
 
-This will run:
-- Black (Python formatting)
-- Flake8 (Python linting)
-- Prettier (JavaScript formatting)
-- ESLint (JavaScript linting)
-- Tests (fast unit tests only)
+## 🏗️ Project Architecture
 
-## 📞 Contact
+### Backend Architecture
 
-### Maintainers
-- **Lead Developer**: thekrishnacast@gmail.com
-- **ML Lead**: @username (email@example.com)
-- **Frontend Lead**: @username (email@example.com)
+```
+backend/
+├── server.py              # FastAPI application entry point
+├── ml_pipeline.py         # ML models and data processing
+├── requirements.txt       # Python dependencies
+├── models/               # ML model definitions
+├── routes/               # API route handlers
+├── services/             # Business logic
+├── utils/                # Helper functions
+└── tests/                # Backend tests
+```
 
-### Project Links
-- **Repository**: https://github.com/blue-star0/PocketSafar
-- **Documentation**: https://PocketSafar.org/docs
-- **Discord**: https://discord.gg/PocketSafar
-- **Website**: https://PocketSafar.org
+### Frontend Architecture
+
+```
+frontend/
+├── src/
+│   ├── components/       # React components
+│   ├── pages/           # Page components
+│   ├── hooks/           # Custom React hooks
+│   ├── services/        # API client services
+│   ├── utils/           # Helper functions
+│   ├── styles/          # Global styles
+│   └── types/           # TypeScript type definitions
+├── public/              # Static assets
+└── tests/               # Frontend tests
+```
+
+## 🐛 Reporting Bugs
+
+When reporting bugs, include:
+
+1. **Environment**: OS, browser (for frontend), Python version (for backend)
+2. **Steps to reproduce**: Clear, numbered steps
+3. **Expected behavior**: What should happen
+4. **Actual behavior**: What actually happens
+5. **Screenshots/Logs**: Visual evidence or error logs
+6. **Component**: Backend API, ML pipeline, or Frontend UI
+
+## 💡 Feature Requests
+
+When requesting features:
+
+1. **Use case**: Describe the problem you're trying to solve
+2. **Proposed solution**: Your idea for implementing the feature
+3. **Alternatives**: Other solutions you've considered
+4. **Stack**: Which part of the system (backend/frontend/ML)
+5. **Impact**: Who would benefit and how
+
+## 📚 Resources
+
+### Backend Resources
+- [FastAPI Documentation](https://fastapi.tiangolo.com/)
+- [scikit-learn Documentation](https://scikit-learn.org/)
+- [pandas Documentation](https://pandas.pydata.org/)
+- [AWS SDK for Python (Boto3)](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html)
+
+### Frontend Resources
+- [React Documentation](https://react.dev/)
+- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
+- [Radix UI Documentation](https://www.radix-ui.com/docs/primitives/overview/introduction)
+- [TypeScript Documentation](https://www.typescriptlang.org/docs/)
+
+### ML Resources
+- [Isolation Forest for Anomaly Detection](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.IsolationForest.html)
+- [TextBlob Documentation](https://textblob.readthedocs.io/)
+
+## 📜 Code of Conduct
+
+This project adheres to a [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to the project maintainers.
+
+## 🤝 Getting Help
+
+If you need help:
+
+1. Check existing [Issues](https://github.com/PocketSafar/PocketSafar/issues)
+2. Read the [README](README.md) and [Setup Guide](PocketSafar_Setup_Guide.md)
+3. Create a new issue with the `question` label
+4. Be specific about what you're trying to do and what's not working
+
+## 🎉 Recognition
+
+All contributors will be recognized in our README. Thank you for making PocketSafar better!
 
 ---
 
-
-Thank you for contributing to PocketSafar! Together, we're building the future of intelligent travel data collection. 🚀
+**Happy Contributing! 🚀**
