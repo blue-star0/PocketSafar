@@ -218,7 +218,7 @@ We are committed to providing a welcoming and inclusive environment. Please read
 
 - • **Issues**: [GitHub Issues](https://github.com/PocketSafar/PocketSafar/issues)
 - • **Discussions**: [GitHub Discussions](https://github.com/PocketSafar/PocketSafar/discussions)
-- • **Email**: [Contact maintainers through GitHub]
+- • **Email**: PocketSafar.org@hotmail.com
 
 ## 🎉 Acknowledgments
 
@@ -234,3 +234,4 @@ We are committed to providing a welcoming and inclusive environment. Please read
 **Built with ❤️ by the PocketSafar community**
 
 *Making travel data accessible, accurate, and actionable for everyone.*
+
