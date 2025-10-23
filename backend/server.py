@@ -14,7 +14,13 @@ import httpx
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 
 # ML pipeline imports
-from .ml_pipeline import clean_gps_data, detect_activity, analyze_sentiment, save_to_cloud
+from .ml_pipeline import clean_gps_data, detect_activity, analyze_sentiment, save_to_clo
+
+# New ML model routers
+from vision_model import router as vision_router
+from forecast_model import router as forecast_router
+from analytics import router as analytics_router
+from sentiment_advanced import router as sentiment_routerud
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -328,7 +334,13 @@ async def calculate_trip_cost(calc_data: ExpenseCalculation, authorization: Opti
         raise HTTPException(status_code=500, detail=f"Calculation error: {str(e)}")
 
 # Include the router in the main app
-app.include_router(api_router)
+app.include_router(api_router
+                  
+# Include new ML model routers
+app.include_router(vision_router)
+app.include_router(forecast_router)
+app.include_router(analytics_router)
+app.include_router(sentiment_router))
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
