@@ -59,7 +59,7 @@ nltk==3.9.1
 numpy==2.3.1
 oauthlib==3.2.2
 opensearch-py==2.8.0
-packaging==25.1
+packaging==24.0
 pandas==2.3.2
 pathspec==0.13.1
 Pillow==11.1.0
