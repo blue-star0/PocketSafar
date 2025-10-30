@@ -48,7 +48,7 @@ jiter==0.11.0
 jmespath==1.0.1
 joblib==1.4.2
 Markdown==3.7
-Markdown-it-py==3.1.0
+Markdown-it-py==3.0.0
 MarkupSafe==3.0.2
 mccabe==0.8.2
 mdurl==0.1.2
