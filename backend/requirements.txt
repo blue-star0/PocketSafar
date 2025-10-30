@@ -50,7 +50,7 @@ joblib==1.4.2
 Markdown==3.7
 Markdown-it-py==3.0.0
 MarkupSafe==3.0.2
-mccabe==0.8.2
+mccabe==0.7.0
 mdurl==0.1.2
 monotonic==1.6
 multidict==6.1.0
