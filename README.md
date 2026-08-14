@@ -152,51 +152,44 @@ PocketSafar includes a comprehensive machine learning pipeline with both classic
 ```bash
 # Clone the repository
 git clone https://github.com/PocketSafar/PocketSafar.git
-cd PocketSafar/backend
+cd PocketSafar
 
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+# Create and activate a virtual environment
+python -m venv .venv
+.venv\Scripts\activate  # On macOS/Linux: source .venv/bin/activate
 
-# Install dependencies
-pip install -r requirements.txt
+# Install backend dependencies
+pip install -r backend/requirements.txt
 
-# Set up environment variables
-cp .env.example .env
-# Edit .env with your MongoDB URI and AWS credentials
+# Optional: create a local environment file
+copy backend\.env.example backend\.env
 
 # Run the backend server
-python server.py
+python -m uvicorn backend.server:app --reload --host 0.0.0.0 --port 8000
 # Server will start at http://localhost:8000
-
 # API docs available at http://localhost:8000/docs
 ```
 
 ### Frontend Setup
 ```bash
 # Navigate to frontend directory
-cd ../frontend
+cd frontend
 
 # Install dependencies
-npm install  # or yarn install
+npm install
 
-# Set up environment variables
-cp .env.example .env
-# Configure API endpoint (default: http://localhost:8000)
-
-# Run development server
-npm run dev  # or yarn dev
-# Application will open at http://localhost:5173
+# Start the development server
+npm run dev
+# Application will open at http://localhost:3000
+# It expects the backend at http://localhost:8000
 ```
 
 ### Running Tests
 
 #### Backend Tests
 ```bash
-cd backend
-pytest  # Run all tests
-pytest --cov=.  # With coverage report
-pytest tests/test_ml_pipeline.py  # Specific test file
+python backend_test.py
+python backend_comprehensive_test.py
 ```
 
 #### Frontend Tests

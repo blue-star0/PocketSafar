@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+/* ===== PocketSafar Design System ===== */
+
+/* Custom CSS Variables */
+:root {
+  /* Brand Colors */
+  --color-primary: #6366f1;
+  --color-primary-hover: #4f46e5;
+  --color-primary-light: #818cf8;
+  --color-secondary: #06b6d4;
+  --color-accent: #f59e0b;
+  --color-success: #10b981;
+  --color-danger: #ef4444;
+  
+  /* Surfaces */
+  --color-background: #ffffff;
+  --color-foreground: #0f172a;
+  --color-card: #ffffff;
+  --color-card-foreground: #0f172a;
+  --color-muted: #f1f5f9;
+  --color-muted-foreground: #64748b;
+  --color-border: #e2e8f0;
+  --color-input: #e2e8f0;
+  --color-ring: #6366f1;
+  
+  /* Sidebar */
+  --color-sidebar: #f8fafc;
+  --color-sidebar-foreground: #0f172a;
+  --color-sidebar-border: #e2e8f0;
+  --color-sidebar-accent: #f1f5f9;
+  
+  /* Radius */
+  --radius: 0.625rem;
+}
+
+.dark {
+  --color-background: #0a0a0f;
+  --color-foreground: #f1f5f9;
+  --color-card: #131320;
+  --color-card-foreground: #f1f5f9;
+  --color-muted: #1e1e2e;
+  --color-muted-foreground: #94a3b8;
+  --color-border: #1e293b;
+  --color-input: #1e293b;
+  --color-ring: #818cf8;
+  
+  --color-sidebar: #0f0f1a;
+  --color-sidebar-foreground: #f1f5f9;
+  --color-sidebar-border: #1e293b;
+  --color-sidebar-accent: #1e1e2e;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Body base */
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Focus visible */
+*:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-muted-foreground);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-foreground);
+}
