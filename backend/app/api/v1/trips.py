@@ -21,9 +21,7 @@ router = APIRouter(prefix="/trips", tags=["trips"])
 @router.get("/", response_model=List[TripResponse])
 async def list_trips(current_user: User = Depends(get_current_user)):
     """List all trips for the current user."""
-    trips = await Trip.find(
-        Trip.user_id == current_user.id
-    ).sort("-created_at").to_list()
+    trips = await Trip.find({"user_id": current_user.id}).sort("-created_at").to_list()
     return [TripResponse.from_trip(t) for t in trips]
 
 

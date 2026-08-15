@@ -20,9 +20,7 @@ router = APIRouter(prefix="/diary", tags=["diary"])
 @router.get("/", response_model=List[DiaryResponse])
 async def list_entries(current_user: User = Depends(get_current_user)):
     """List all diary entries for the current user."""
-    entries = await DiaryEntry.find(
-        DiaryEntry.user_id == current_user.id
-    ).sort("-entry_date").to_list()
+    entries = await DiaryEntry.find({"user_id": current_user.id}).sort("-entry_date").to_list()
     return [DiaryResponse.from_entry(e) for e in entries]
 
 

@@ -20,7 +20,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 async def register(data: RegisterRequest):
     """Register a new user with email and password."""
     # Check if email already exists
-    existing = await User.find_one(User.email == data.email)
+    existing = await User.find_one({"email": data.email})
     if existing:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -28,7 +28,7 @@ async def register(data: RegisterRequest):
         )
 
     # Check if username already exists
-    existing_username = await User.find_one(User.username == data.username)
+    existing_username = await User.find_one({"username": data.username})
     if existing_username:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -56,7 +56,7 @@ async def register(data: RegisterRequest):
 @router.post("/login", response_model=TokenResponse)
 async def login(data: LoginRequest):
     """Login with email and password."""
-    user = await User.find_one(User.email == data.email)
+    user = await User.find_one({"email": data.email})
     if not user or not user.password_hash:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

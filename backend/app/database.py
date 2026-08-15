@@ -5,6 +5,9 @@ from beanie import init_beanie
 import logging
 
 from app.config import settings
+from app.models.user import User
+from app.models.diary import DiaryEntry
+from app.models.trip import Trip
 
 logger = logging.getLogger(__name__)
 
@@ -17,11 +20,6 @@ async def init_db() -> None:
     try:
         client = AsyncIOMotorClient(settings.MONGODB_URI)
         db = client[settings.MONGODB_DB_NAME]
-
-        # Import all Beanie Document models here
-        from app.models.user import User
-        from app.models.diary import DiaryEntry
-        from app.models.trip import Trip
 
         await init_beanie(
             database=db,

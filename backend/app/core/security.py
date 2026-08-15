@@ -3,26 +3,28 @@
 from datetime import datetime, timedelta, timezone
 from typing import Optional, Dict, Any
 from jose import jwt, JWTError
-from passlib.context import CryptContext
+import bcrypt
 
 from app.config import settings
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-
-def _truncate_password(password: str) -> str:
-    """Truncate password to 72 bytes (bcrypt limit)."""
-    return password.encode("utf-8")[:72].decode("utf-8", errors="ignore")
+def _truncate_password(password: str) -> bytes:
+    """Truncate password to 72 bytes (bcrypt limit) and return as bytes."""
+    return password.encode("utf-8")[:72]
 
 
 def hash_password(password: str) -> str:
     """Hash a plain-text password (truncated to bcrypt 72-byte limit)."""
-    return pwd_context.hash(_truncate_password(password))
+    salt = bcrypt.gensalt()
+    return bcrypt.hashpw(_truncate_password(password), salt).decode("utf-8")
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify a password against its hash."""
-    return pwd_context.verify(_truncate_password(plain_password), hashed_password)
+    return bcrypt.checkpw(
+        _truncate_password(plain_password),
+        hashed_password.encode("utf-8")
+    )
 
 
 def create_access_token(
