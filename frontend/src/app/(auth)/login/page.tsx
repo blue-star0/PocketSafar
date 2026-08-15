@@ -12,7 +12,7 @@ import { useAuthStore } from "@/stores/auth-store";
 import type { AuthResponse } from "@/types";
 
 const loginSchema = z.object({
-  username: z.string().min(1, "Username is required"),
+  email: z.string().email("Please enter a valid email"),
   password: z.string().min(1, "Password is required"),
 });
 
@@ -23,7 +23,7 @@ export default function LoginPage() {
   const setAuth = useAuthStore((state) => state.setAuth);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
   });
@@ -31,15 +31,11 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginForm) => {
     try {
       setError(null);
-      // Construct form data for OAuth2 spec login endpoint
-      const formData = new FormData();
-      formData.append("username", data.username);
-      formData.append("password", data.password);
-
-      const response = await api.post<AuthResponse>("/auth/login", formData, {
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      const response = await api.post<AuthResponse>("/auth/login", {
+        email: data.email,
+        password: data.password,
       });
-      
+
       setAuth(response.data.user, response.data.access_token);
       router.push("/diary");
     } catch (err: any) {
@@ -65,14 +61,14 @@ export default function LoginPage() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <div>
-          <label className="block text-sm font-medium mb-1">Username or Email</label>
+          <label className="block text-sm font-medium mb-1">Email</label>
           <input
-            {...register("username")}
-            type="text"
+            {...register("email")}
+            type="email"
             className="w-full px-4 py-3 rounded-xl bg-[var(--color-background)] border border-[var(--color-input)] focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-colors outline-none"
-            placeholder="Enter your username"
+            placeholder="you@example.com"
           />
-          {errors.username && <p className="text-red-500 text-xs mt-1">{errors.username.message}</p>}
+          {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
         </div>
 
         <div>
@@ -93,6 +89,12 @@ export default function LoginPage() {
             </button>
           </div>
           {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
+        </div>
+
+        <div className="flex justify-end">
+          <Link href="#" className="text-xs text-[var(--color-primary)] hover:underline">
+            Forgot password?
+          </Link>
         </div>
 
         <button
@@ -119,7 +121,7 @@ export default function LoginPage() {
       </button>
 
       <p className="mt-8 text-center text-sm text-[var(--color-muted-foreground)]">
-        Don't have an account?{" "}
+        Don&apos;t have an account?{" "}
         <Link href="/register" className="text-[var(--color-primary)] hover:underline font-medium">
           Sign up
         </Link>
