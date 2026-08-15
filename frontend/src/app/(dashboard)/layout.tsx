@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/auth-store";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Topbar } from "@/components/layout/topbar";
+import { MobileNav } from "@/components/layout/mobile-nav";
 
 export default function DashboardLayout({
   children,
@@ -39,8 +40,12 @@ export default function DashboardLayout({
       <Sidebar />
       <div className="flex flex-1 flex-col md:ml-64">
         <Topbar />
-        <main className="flex-1 overflow-auto p-4 md:p-6 mt-16">{children}</main>
+        {/* pb-20 gives space for mobile bottom nav */}
+        <main className="flex-1 overflow-auto p-4 md:p-6 mt-16 pb-20 md:pb-6">
+          {children}
+        </main>
       </div>
+      <MobileNav />
     </div>
   );
 }

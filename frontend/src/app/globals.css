@@ -51,8 +51,9 @@
   --color-sidebar-accent: #1e1e2e;
 }
 
-/* Smooth scrolling */
-html {
+/* Smooth scrolling — use data-scroll-behavior on html instead of CSS to
+   avoid Next.js route transition warning */
+html[data-scroll-behavior="smooth"] {
   scroll-behavior: smooth;
 }
 

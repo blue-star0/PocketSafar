@@ -95,9 +95,9 @@ export default function DiaryPage() {
                   <div className="flex items-center gap-2">
                     {entry.mood && <span title={entry.mood}>{moodEmoji[entry.mood] || "🙂"}</span>}
                     {entry.is_public ? (
-                      <Globe className="h-3.5 w-3.5 text-green-500" title="Public" />
+                      <span title="Public"><Globe className="h-3.5 w-3.5 text-green-500" /></span>
                     ) : (
-                      <Lock className="h-3.5 w-3.5" title="Private" />
+                      <span title="Private"><Lock className="h-3.5 w-3.5" /></span>
                     )}
                   </div>
                 </div>
